@@ -1,7 +1,7 @@
 Summary: X.Org X11 libXfont runtime library
 Name: libXfont
 Version: 1.4.5
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
@@ -29,6 +29,9 @@ Patch10: 0009-CVE-2014-0210-unvalidated-length-fields-in-fs_read_e.patch
 Patch11: 0010-CVE-2014-0210-unvalidated-length-fields-in-fs_read_g.patch
 Patch12: 0011-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
 Patch13: 0012-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
+Patch14: cve-2015-1802.patch
+Patch15: cve-2015-1803.patch
+Patch16: cve-2015-1804.patch
 
 %description
 X.Org X11 libXfont runtime library
@@ -59,6 +62,9 @@ X.Org X11 libXfont development package
 %patch11 -p1 -b .cve20140210.10
 %patch12 -p1 -b .cve20140210.11
 %patch13 -p1 -b .cve20140210.12
+%patch14 -p1 -b .cve20151802
+%patch15 -p1 -b .cve20151803
+%patch16 -p1 -b .cve20151804
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -Os"
@@ -108,6 +114,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/xfont.pc
 
 %changelog
+* Tue Sep 01 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.4.5-5
+- CVE-2015-1802: missing range check in bdfReadProperties (bug 1258892)
+- CVE-2015-1803: crash on invalid read in bdfReadCharacters (bug 1258892)
+- CVE-2015-1804: out-of-bounds memory access in bdfReadCharacters (bug 1258892)
+
 * Thu Nov 13 2014 Benjamin Tissoires <btissoir@redhat.com> 1.4.5-4
 - CVE-2014-0209: integer overflow of allocations in font metadata file parsing (bug 1163602, bug 1163601)
 - CVE-2014-0210: unvalidated length fields when parsing xfs protocol replies (bug 1163602, bug 1163601)
