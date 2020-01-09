@@ -1,7 +1,7 @@
 Summary: X.Org X11 libXfont runtime library
 Name: libXfont
 Version: 1.4.5
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
@@ -17,6 +17,18 @@ BuildRequires: freetype-devel
 
 Patch0: cve-2013-6462.patch
 Patch1: sscanf-hardening.patch
+Patch2: 0001-CVE-2014-0209-integer-overflow-of-realloc-size-in-Fo.patch
+Patch3: 0002-CVE-2014-0209-integer-overflow-of-realloc-size-in-le.patch
+Patch4: 0003-CVE-2014-0210-unvalidated-length-in-_fs_recv_conn_se.patch
+Patch5: 0004-CVE-2014-0210-unvalidated-lengths-when-reading-repli.patch
+Patch6: 0005-CVE-2014-0211-Integer-overflow-in-fs_get_reply-_fs_s.patch
+Patch7: 0006-CVE-2014-0210-unvalidated-length-fields-in-fs_read_q.patch
+Patch8: 0007-CVE-2014-0211-integer-overflow-in-fs_read_extent_inf.patch
+Patch9: 0008-CVE-2014-0211-integer-overflow-in-fs_alloc_glyphs.patch
+Patch10: 0009-CVE-2014-0210-unvalidated-length-fields-in-fs_read_e.patch
+Patch11: 0010-CVE-2014-0210-unvalidated-length-fields-in-fs_read_g.patch
+Patch12: 0011-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
+Patch13: 0012-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
 
 %description
 X.Org X11 libXfont runtime library
@@ -35,6 +47,18 @@ X.Org X11 libXfont development package
 
 %patch0 -p1 -b .cve20136462
 %patch1 -p1 -b .sscanf-hardening
+%patch2 -p1 -b .cve20140209.1
+%patch3 -p1 -b .cve20140209.2
+%patch4 -p1 -b .cve20140210.3
+%patch5 -p1 -b .cve20140210.4
+%patch6 -p1 -b .cve20140211.5
+%patch7 -p1 -b .cve20140210.6
+%patch8 -p1 -b .cve20140211.7
+%patch9 -p1 -b .cve20140211.8
+%patch10 -p1 -b .cve20140210.9
+%patch11 -p1 -b .cve20140210.10
+%patch12 -p1 -b .cve20140210.11
+%patch13 -p1 -b .cve20140210.12
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -Os"
@@ -84,6 +108,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/xfont.pc
 
 %changelog
+* Thu Nov 13 2014 Benjamin Tissoires <btissoir@redhat.com> 1.4.5-4
+- CVE-2014-0209: integer overflow of allocations in font metadata file parsing (bug 1163602, bug 1163601)
+- CVE-2014-0210: unvalidated length fields when parsing xfs protocol replies (bug 1163602, bug 1163601)
+- CVE-2014-0211: integer overflows calculating memory needs for xfs replies (bug 1163602, bug 1163601)
+
 * Wed Jan 8 2014 Soren Sandmann <ssp@redhat.com> 1.4.5-3
 - cve-2013-6462.patch: sscanf overflow (bug 1049684)
 - sscanf-hardening.patch: Some other sscanf hardening fixes (1049684)
