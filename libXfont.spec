@@ -1,37 +1,21 @@
 Summary: X.Org X11 libXfont runtime library
 Name: libXfont
-Version: 1.4.5
-Release: 5%{?dist}
+Version: 1.5.1
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0: http://www.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 
+Patch0: bdfReadCharacters-Allow-negative-DWIDTH-values.patch
+
+BuildRequires: autoconf automake libtool
 BuildRequires: pkgconfig(fontsproto)
 BuildRequires: xorg-x11-util-macros
 BuildRequires: xorg-x11-xtrans-devel >= 1.0.3-3
 BuildRequires: libfontenc-devel
 BuildRequires: freetype-devel
-
-Patch0: cve-2013-6462.patch
-Patch1: sscanf-hardening.patch
-Patch2: 0001-CVE-2014-0209-integer-overflow-of-realloc-size-in-Fo.patch
-Patch3: 0002-CVE-2014-0209-integer-overflow-of-realloc-size-in-le.patch
-Patch4: 0003-CVE-2014-0210-unvalidated-length-in-_fs_recv_conn_se.patch
-Patch5: 0004-CVE-2014-0210-unvalidated-lengths-when-reading-repli.patch
-Patch6: 0005-CVE-2014-0211-Integer-overflow-in-fs_get_reply-_fs_s.patch
-Patch7: 0006-CVE-2014-0210-unvalidated-length-fields-in-fs_read_q.patch
-Patch8: 0007-CVE-2014-0211-integer-overflow-in-fs_read_extent_inf.patch
-Patch9: 0008-CVE-2014-0211-integer-overflow-in-fs_alloc_glyphs.patch
-Patch10: 0009-CVE-2014-0210-unvalidated-length-fields-in-fs_read_e.patch
-Patch11: 0010-CVE-2014-0210-unvalidated-length-fields-in-fs_read_g.patch
-Patch12: 0011-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
-Patch13: 0012-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
-Patch14: cve-2015-1802.patch
-Patch15: cve-2015-1803.patch
-Patch16: cve-2015-1804.patch
 
 %description
 X.Org X11 libXfont runtime library
@@ -48,53 +32,29 @@ X.Org X11 libXfont development package
 %prep
 %setup -q
 
-%patch0 -p1 -b .cve20136462
-%patch1 -p1 -b .sscanf-hardening
-%patch2 -p1 -b .cve20140209.1
-%patch3 -p1 -b .cve20140209.2
-%patch4 -p1 -b .cve20140210.3
-%patch5 -p1 -b .cve20140210.4
-%patch6 -p1 -b .cve20140211.5
-%patch7 -p1 -b .cve20140210.6
-%patch8 -p1 -b .cve20140211.7
-%patch9 -p1 -b .cve20140211.8
-%patch10 -p1 -b .cve20140210.9
-%patch11 -p1 -b .cve20140210.10
-%patch12 -p1 -b .cve20140210.11
-%patch13 -p1 -b .cve20140210.12
-%patch14 -p1 -b .cve20151802
-%patch15 -p1 -b .cve20151803
-%patch16 -p1 -b .cve20151804
+%patch0 -p1
 
 %build
+autoreconf -v --install --force
 export CFLAGS="$RPM_OPT_FLAGS -Os"
 %configure --disable-static
 make %{?_smp_mflags}  
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 
 # We intentionally don't ship *.la files
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root,-)
-# FIXME:  Missing README/INSTALL - should file bug upstream.
-#%doc AUTHORS COPYING README INSTALL ChangeLog NEWS
-%doc AUTHORS COPYING ChangeLog
+%doc AUTHORS COPYING README ChangeLog
 %{_libdir}/libXfont.so.1
 %{_libdir}/libXfont.so.1.4.1
 
 %files devel
-%defattr(-,root,root,-)
 %{_includedir}/X11/fonts/bdfint.h
 %{_includedir}/X11/fonts/bitmap.h
 %{_includedir}/X11/fonts/bufio.h
@@ -114,10 +74,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/xfont.pc
 
 %changelog
-* Tue Sep 01 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.4.5-5
-- CVE-2015-1802: missing range check in bdfReadProperties (bug 1258892)
-- CVE-2015-1803: crash on invalid read in bdfReadCharacters (bug 1258892)
-- CVE-2015-1804: out-of-bounds memory access in bdfReadCharacters (bug 1258892)
+* Tue Jul 28 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.5.1-2
+- Add bdfReadCharacters patch to fix XTS compilation problems (rhbz#1241939)
+
+* Wed Mar 18 2015 Peter Hutterer <peter.hutterer@redhat.com> 1.5.1-1
+- libXfont 1.5.1 (CVE-2015-1802, CVE-2015-1803, CVE-2015-1804)
 
 * Thu Nov 13 2014 Benjamin Tissoires <btissoir@redhat.com> 1.4.5-4
 - CVE-2014-0209: integer overflow of allocations in font metadata file parsing (bug 1163602, bug 1163601)
