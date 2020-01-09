@@ -1,7 +1,7 @@
 Summary: X.Org X11 libXfont runtime library
 Name: libXfont
 Version: 1.4.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
@@ -14,6 +14,9 @@ BuildRequires: xorg-x11-util-macros
 BuildRequires: xorg-x11-xtrans-devel >= 1.0.3-3
 BuildRequires: libfontenc-devel
 BuildRequires: freetype-devel
+
+Patch0: cve-2013-6462.patch
+Patch1: sscanf-hardening.patch
 
 %description
 X.Org X11 libXfont runtime library
@@ -29,6 +32,9 @@ X.Org X11 libXfont development package
 
 %prep
 %setup -q
+
+%patch0 -p1 -b .cve20136462
+%patch1 -p1 -b .sscanf-hardening
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -Os"
@@ -78,6 +84,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/xfont.pc
 
 %changelog
+* Wed Jan 8 2014 Soren Sandmann <ssp@redhat.com> 1.4.5-3
+- cve-2013-6462.patch: sscanf overflow (bug 1049684)
+- sscanf-hardening.patch: Some other sscanf hardening fixes (1049684)
+
 * Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4.5-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
