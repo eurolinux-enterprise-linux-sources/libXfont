@@ -1069,6 +1069,8 @@ FT_Do_SBit_Metrics( FT_Face ft_face, FT_Size ft_size, FT_ULong strike_index,
 #endif
 }
 
+#pragma GCC diagnostic ignored "-Wbad-function-cast"
+
 int
 FreeTypeRasteriseGlyph(unsigned idx, int flags, CharInfoPtr tgp,
 		       FTInstancePtr instance, int hasMetrics)
@@ -1865,7 +1867,7 @@ FreeTypeAddProperties(FTFontPtr font, FontScalablePtr vals, FontInfoPtr info,
     i++;
 
     info->props[i].name  = MakeAtom("RASTERIZER_NAME", 15, TRUE);
-    info->props[i].value = MakeAtom("FreeType", 10, TRUE);
+    info->props[i].value = MakeAtom("FreeType", 8, TRUE);
     info->isStringProp[i] = 1;
     i++;
 

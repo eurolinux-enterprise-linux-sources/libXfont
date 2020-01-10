@@ -1,13 +1,14 @@
 Summary: X.Org X11 libXfont runtime library
 Name: libXfont
-Version: 1.4.7
-Release: 3%{?dist}
+Version: 1.5.1
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0: http://www.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
+
+Patch0: bdfReadCharacters-Allow-negative-DWIDTH-values.patch
 
 BuildRequires: autoconf automake libtool
 BuildRequires: pkgconfig(fontsproto)
@@ -16,30 +17,14 @@ BuildRequires: xorg-x11-xtrans-devel >= 1.0.3-3
 BuildRequires: libfontenc-devel
 BuildRequires: freetype-devel
 
-Patch0: 0001-CVE-2014-0209-integer-overflow-of-realloc-size-in-Fo.patch
-Patch1: 0002-CVE-2014-0209-integer-overflow-of-realloc-size-in-le.patch
-Patch2: 0003-CVE-2014-0210-unvalidated-length-in-_fs_recv_conn_se.patch
-Patch3: 0004-CVE-2014-0210-unvalidated-lengths-when-reading-repli.patch
-Patch4: 0005-CVE-2014-0211-Integer-overflow-in-fs_get_reply-_fs_s.patch
-Patch5: 0006-CVE-2014-0210-unvalidated-length-fields-in-fs_read_q.patch
-Patch6: 0007-CVE-2014-0211-integer-overflow-in-fs_read_extent_inf.patch
-Patch7: 0008-CVE-2014-0211-integer-overflow-in-fs_alloc_glyphs.patch
-Patch8: 0009-CVE-2014-0210-unvalidated-length-fields-in-fs_read_e.patch
-Patch9: 0010-CVE-2014-0210-unvalidated-length-fields-in-fs_read_g.patch
-Patch10: 0011-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
-Patch11: 0012-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
-Patch12: cve-2015-1802.patch
-Patch13: cve-2015-1803.patch
-Patch14: cve-2015-1804.patch
-
 %description
 X.Org X11 libXfont runtime library
 
 %package devel
 Summary: X.Org X11 libXfont development package
 Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
-Requires: libfontenc-devel
+Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: libfontenc-devel%{?_isa}
 
 %description devel
 X.Org X11 libXfont development package
@@ -47,21 +32,7 @@ X.Org X11 libXfont development package
 %prep
 %setup -q
 
-%patch0  -p1 -b .cve20140209.1
-%patch1  -p1 -b .cve20140209.2
-%patch2  -p1 -b .cve20140210.3
-%patch3  -p1 -b .cve20140210.4
-%patch4  -p1 -b .cve20140211.5
-%patch5  -p1 -b .cve20140210.6
-%patch6  -p1 -b .cve20140211.7
-%patch7  -p1 -b .cve20140211.8
-%patch8  -p1 -b .cve20140210.9
-%patch9  -p1 -b .cve20140210.10
-%patch10 -p1 -b .cve20140210.11
-%patch11 -p1 -b .cve20140210.12
-%patch12 -p1 -b .cve20151802.13
-%patch13 -p1 -b .cve20151803.14
-%patch14 -p1 -b .cve20151804.15
+%patch0 -p1
 
 %build
 autoreconf -v --install --force
@@ -70,29 +41,20 @@ export CFLAGS="$RPM_OPT_FLAGS -Os"
 make %{?_smp_mflags}  
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 
 # We intentionally don't ship *.la files
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root,-)
-# FIXME:  Missing README/INSTALL - should file bug upstream.
-#%doc AUTHORS COPYING README INSTALL ChangeLog NEWS
-%doc AUTHORS COPYING ChangeLog
+%doc AUTHORS COPYING README ChangeLog
 %{_libdir}/libXfont.so.1
 %{_libdir}/libXfont.so.1.4.1
 
 %files devel
-%defattr(-,root,root,-)
 %{_includedir}/X11/fonts/bdfint.h
 %{_includedir}/X11/fonts/bitmap.h
 %{_includedir}/X11/fonts/bufio.h
@@ -112,22 +74,30 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/xfont.pc
 
 %changelog
-* Thu Sep 03 2015 Scientific Linux Auto Patch Process <SCIENTIFIC-LINUX-DEVEL@LISTSERV.FNAL.GOV>
-- Eliminated rpmbuild "bogus date" error due to inconsistent weekday,
-  by assuming the date is correct and changing the weekday.
+* Tue Jul 28 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.5.1-2
+- Add bdfReadCharacters patch to fix XTS compilation problems (rhbz#1241939)
 
-* Tue Sep 01 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.4.7-3
-- CVE-2015-1802: missing range check in bdfReadProperties (bug 1258894)
-- CVE-2015-1803: crash on invalid read in bdfReadCharacters (bug 1258894)
-- CVE-2015-1804: out-of-bounds memory access in bdfReadCharacters (bug 1258894)
+* Wed Mar 18 2015 Peter Hutterer <peter.hutterer@redhat.com> 1.5.1-1
+- libXfont 1.5.1 (CVE-2015-1802, CVE-2015-1803, CVE-2015-1804)
 
-* Thu Nov 13 2014 Benjamin Tissoires <btissoir@redhat.com> 1.4.7-2
-- CVE-2014-0209: integer overflow of allocations in font metadata file parsing (bug 1163604, bug 1163603)
-- CVE-2014-0210: unvalidated length fields when parsing xfs protocol replies (bug 1163604, bug 1163603)
-- CVE-2014-0211: integer overflows calculating memory needs for xfs replies (bug 1163604, bug 1163603)
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.5.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
-* Wed Feb 12 2014 Adam Jackson <ajax@redhat.com> 1.4.7-1.1
-- Mass rebuild
+* Thu Jul 31 2014 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.5.0-1
+- libXfont 1.5.0
+
+* Wed Jul  9 2014 Hans de Goede <hdegoede@redhat.com> - 1.4.99.901-1
+- libXfont 1.4.99.901
+
+* Wed Jul  9 2014 Hans de Goede <hdegoede@redhat.com> - 1.4.8-1
+- libXfont 1.4.8 (rhbz#1100441)
+- Fixes: CVE-2014-0209, CVE-2014-0210, CVE-2014-0211 (rhbz#1097397)
+
+* Mon Jun 09 2014 Adam Jackson <ajax@redhat.com> 1.4.7-2
+- Fix FTBFS against new fontproto
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4.7-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
 * Wed Jan 08 2014 Peter Hutterer <peter.hutterer@redhat.com> 1.4.7-1
 - libXfont 1.4.7 (CVE-2013-6462)
