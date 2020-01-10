@@ -1,7 +1,7 @@
 Summary: X.Org X11 libXfont runtime library
 Name: libXfont
 Version: 1.4.7
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
@@ -28,6 +28,9 @@ Patch8: 0009-CVE-2014-0210-unvalidated-length-fields-in-fs_read_e.patch
 Patch9: 0010-CVE-2014-0210-unvalidated-length-fields-in-fs_read_g.patch
 Patch10: 0011-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
 Patch11: 0012-CVE-2014-0210-unvalidated-length-fields-in-fs_read_l.patch
+Patch12: cve-2015-1802.patch
+Patch13: cve-2015-1803.patch
+Patch14: cve-2015-1804.patch
 
 %description
 X.Org X11 libXfont runtime library
@@ -56,6 +59,9 @@ X.Org X11 libXfont development package
 %patch9  -p1 -b .cve20140210.10
 %patch10 -p1 -b .cve20140210.11
 %patch11 -p1 -b .cve20140210.12
+%patch12 -p1 -b .cve20151802.13
+%patch13 -p1 -b .cve20151803.14
+%patch14 -p1 -b .cve20151804.15
 
 %build
 autoreconf -v --install --force
@@ -106,6 +112,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/xfont.pc
 
 %changelog
+* Thu Sep 03 2015 Scientific Linux Auto Patch Process <SCIENTIFIC-LINUX-DEVEL@LISTSERV.FNAL.GOV>
+- Eliminated rpmbuild "bogus date" error due to inconsistent weekday,
+  by assuming the date is correct and changing the weekday.
+
+* Tue Sep 01 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.4.7-3
+- CVE-2015-1802: missing range check in bdfReadProperties (bug 1258894)
+- CVE-2015-1803: crash on invalid read in bdfReadCharacters (bug 1258894)
+- CVE-2015-1804: out-of-bounds memory access in bdfReadCharacters (bug 1258894)
+
 * Thu Nov 13 2014 Benjamin Tissoires <btissoir@redhat.com> 1.4.7-2
 - CVE-2014-0209: integer overflow of allocations in font metadata file parsing (bug 1163604, bug 1163603)
 - CVE-2014-0210: unvalidated length fields when parsing xfs protocol replies (bug 1163604, bug 1163603)
