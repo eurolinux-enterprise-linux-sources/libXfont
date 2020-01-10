@@ -1,14 +1,12 @@
 Summary: X.Org X11 libXfont runtime library
 Name: libXfont
-Version: 1.5.1
-Release: 2%{?dist}
+Version: 1.5.2
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
 
 Source0: http://www.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
-
-Patch0: bdfReadCharacters-Allow-negative-DWIDTH-values.patch
 
 BuildRequires: autoconf automake libtool
 BuildRequires: pkgconfig(fontsproto)
@@ -31,8 +29,6 @@ X.Org X11 libXfont development package
 
 %prep
 %setup -q
-
-%patch0 -p1
 
 %build
 autoreconf -v --install --force
@@ -74,6 +70,9 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 %{_libdir}/pkgconfig/xfont.pc
 
 %changelog
+* Mon Jan 23 2017 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.5.2-1
+- libXfont 1.5.2
+
 * Tue Jul 28 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.5.1-2
 - Add bdfReadCharacters patch to fix XTS compilation problems (rhbz#1241939)
 
